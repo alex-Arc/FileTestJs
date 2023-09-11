@@ -1,6 +1,8 @@
 import { writeFile, appendFile } from 'fs/promises';
 import { writeFileSync, appendFileSync, write, createWriteStream } from 'fs';
-import path from 'path';
+import { Writer } from 'steno';
+
+import {normalize} from 'path';
 
 type OntimeDump = {
     startedAt: number | null;
@@ -12,27 +14,33 @@ type OntimeDump = {
 let oldStore: string = ''
 
 async function override(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.json'): Promise<void> {
-    writeFile(path.normalize(dumpPath), JSON.stringify(store), 'utf-8').
+    writeFile(normalize(dumpPath), JSON.stringify(store), 'utf-8').
         catch((err) => { console.error('DUMP', 'failde to dump state, ' + err) });
 }
 
 function overrideSync(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.json'): void {
-    writeFileSync(path.normalize(dumpPath), JSON.stringify(store), 'utf-8');
+    writeFileSync(normalize(dumpPath), JSON.stringify(store), 'utf-8');
 }
 
 async function append(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.json'): Promise<void> {
-    appendFile(path.normalize(dumpPath), JSON.stringify(store) + '\n', 'utf-8').
+    appendFile(normalize(dumpPath), JSON.stringify(store) + '\n', 'utf-8').
         catch((err) => { console.error('DUMP', 'failde to dump state, ' + err) });
 }
 
 function appendSync(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.json'): void {
-    appendFileSync(path.normalize(dumpPath), JSON.stringify(store) + '\n', 'utf-8');
+    appendFileSync(normalize(dumpPath), JSON.stringify(store) + '\n', 'utf-8');
 }
 
 async function appendMinimize(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.csv'): Promise<void> {
     let data = (store.startedAt?.toString() ?? '') + ',' + (store.playback ?? '') + ',' + (store.selectedEventId ?? '') + ',' + (store.addedTime?.toString() ?? '');
-    appendFile(path.normalize(dumpPath), data + '\n', 'utf-8').
+    appendFile(normalize(dumpPath), data + '\n', 'utf-8').
         catch((err) => { console.error('DUMP', 'failde to dump state, ' + err) });
+}
+
+const file = new Writer(normalize(__dirname +' /../dump/test.csv'));
+
+async function steno(store: Partial<OntimeDump>, dumpPath: string = __dirname + '/../dump/test.csv'): Promise<void> {
+    file.write(JSON.stringify(store));
 }
 
 
@@ -48,7 +56,7 @@ async function test(name: string, fun: Function, data: OntimeDump, repeat: numbe
     console.timeEnd(name);
 }
 
-const rep = 100;
+const rep = 1;
 
 
 test('override', override, { startedAt: 123456789, playback: 'play', selectedEventId: 'asfe', addedTime: 12874 }, rep);
@@ -59,7 +67,7 @@ test('appendSync', appendSync, { startedAt: 123456789, playback: 'play', selecte
 test('appendMinimize', appendMinimize, { startedAt: 123456789, playback: 'play', selectedEventId: 'asfe', addedTime: 12874 }, rep);
 
 console.time('createWriteStream');
-let writeStream = createWriteStream(path.normalize(__dirname + '/../dump/testStream.json'), { autoClose: false });
+let writeStream = createWriteStream(normalize(__dirname + '/../dump/testStream.json'), { autoClose: false });
 console.timeEnd('createWriteStream');
 
 test('appendStream', appendStream, { startedAt: 123456789, playback: 'play', selectedEventId: 'asfe', addedTime: 12874 }, rep).then(() => {

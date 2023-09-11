@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  steno:
+    specifier: ^3.0.0
+    version: 3.0.0
+
 devDependencies:
   '@types/node':
     specifier: ^20.6.0
@@ -288,6 +293,11 @@ packages:
     dependencies:
       semver: 7.5.4
     dev: true
+
+  /steno@3.0.0:
+    resolution: {integrity: sha512-uZtn7Ht9yXLiYgOsmo8btj4+f7VxyYheMt8g6F1ANjyqByQXEE2Gygjgenp3otHH1TlHsS4JAaRGv5wJ1wvMNw==}
+    engines: {node: '>=14.16'}
+    dev: false
 
   /supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
